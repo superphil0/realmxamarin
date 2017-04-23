@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Realms;
+using Environment = System.Environment;
 
 namespace RealmRepro.Droid
 {
@@ -27,19 +28,18 @@ namespace RealmRepro.Droid
             Button button = FindViewById<Button>(Resource.Id.myButton);
 
             button.Click += delegate { button.Text = $"{count++} clicks!"; };
-
-            //Realm.DeleteRealm(new RealmConfiguration());
+            Realm.DeleteRealm(new RealmConfiguration());
             var db = Realm.GetInstance();
             using (var transaction = db.BeginWrite())
             {
                 db.Add(new MyClass
                 {
-                    Time = DateTimeOffset.Now
+                    mTime = DateTimeOffset.Now
                 });
                 transaction.Commit();
             }
-            var time = db.All<MyClass>().ElementAt(0);
-            button.Text = time.ToString();
+            var time = db.All<MyClass>().ElementAt(0).mTime.ToString();
+            button.Text = time;
         }
     }
 }
